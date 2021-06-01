@@ -1,14 +1,15 @@
 """Module to asynchronously query large data sets."""
 
-import asyncio
+import csv
 import http
+import io
 
 from collections.abc import Iterable
 from datetime import datetime
 from fondat.codec import get_codec, JSON, String
 from fondat.data import datacls
-from fondat.error import reraise, InternalServerError
-from fondat.resource import resource, operation, query
+from fondat.error import InternalServerError, NotFoundError, reraise
+from fondat.resource import resource, operation, query, mutation
 from fondat.salesforce.client import Client
 from typing import Literal, Optional
 
@@ -43,7 +44,7 @@ class Query:
 
 @datacls
 class QueryResultsPage:
-    items: list[dict[str, str]]
+    items: list[list[str]]
     cursor: Optional[bytes]
 
 
@@ -96,11 +97,23 @@ def queries_resource(client: Client):
             async with client.request("DELETE", self.path):
                 pass
 
-        @query
-        async def results(self, limit: int = None, cursor: bytes = None) -> QueryResultsPage:
-            """Get results for a query job."""
+        @mutation
+        async def abort(self):
+            """Abort a query job."""
 
-            params = {"maxRecords": str(limit or 10000)}
+            async with client.request("PATCH", self.path, json={"state": "Aborted"}):
+                pass
+
+        @query
+        async def results(self, limit: int = 1000, cursor: bytes = None) -> QueryResultsPage:
+            """
+            Get results for a query job as CSV rows.
+
+            The returned page items contain CSV-decoded rows. The first row is the CSV header,
+            which contains the names of the columns.
+            """
+
+            params = {"maxRecords": str(limit)}
             if cursor:
                 params["locator"] = cursor.decode()
             async with client.request(
@@ -110,16 +123,12 @@ def queries_resource(client: Client):
                 params=params,
             ) as response:
                 if response.status == http.HTTPStatus.NO_CONTENT.value:
-                    await asyncio.sleep(1)
-                    return QueryResultsPage(items=[], cursor=b"")
-                row_codec = get_codec(String, list[str])
-                items = []
-                keys = row_codec.decode((await response.content.readline()).decode())
-                while line := (await response.content.readline()).decode():
-                    items.append(dict(zip(keys, row_codec.decode(line))))
+                    raise NotFoundError  # no results yet
+                with io.StringIO(await response.text()) as sio:
+                    items = [row for row in csv.reader(sio)]
                 locator = response.headers.get("Sforce-Locator")
             return QueryResultsPage(
-                items=items, cursor=locator.encode() if locator and locator != "null" else None
+                items=items, cursor=locator.encode() if locator != "null" else None
             )
 
     @resource
@@ -131,13 +140,11 @@ def queries_resource(client: Client):
             """Get information about all query jobs."""
 
             params = {"jobType": "V2Query"}
-            try:
+            with reraise((TypeError, ValueError), InternalServerError):
                 async with client.request(
                     method="GET", path=cursor.decode() if cursor else path, params=params
                 ) as response:
                     json = get_codec(JSON, _QueriesResponse).decode(await response.json())
-            except (TypeError, ValueError) as e:
-                raise InternalServerError from e
             return QueriesPage(
                 items=json.records,
                 cursor=json.nextRecordsUrl.encode() if json.nextRecordsUrl else None,

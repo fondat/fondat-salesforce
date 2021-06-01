@@ -64,6 +64,7 @@ class Client:
             headers["Authorization"] = f"Bearer {self.token.access_token}"
             url = f"{self.token.instance_url}{path}"
             try:
+                print(f"{method} {url} {json=}")
                 async with self.session.request(
                     method=method,
                     url=url,

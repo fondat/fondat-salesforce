@@ -75,32 +75,34 @@ class SObjectMetadata:
     fields: list[Field]
 
 
-def _so_field_type(field: Field) -> Any:
+def sobject_field_type(field: Field) -> Any:
+    """Return the Python type associated with an SObject field."""
+
     if field.type in {"email", "id", "reference", "phone", "string", "textarea", "url"}:
-        type_ = str
+        result = str
     elif field.type == "int":
-        type_ = int
+        result = int
     elif field.type in {"currency", "double", "percent"}:
-        type_ = float
+        result = float
     elif field.type == "boolean":
-        type_ = bool
+        result = bool
     elif field.type == "date":
-        type_ = date
+        result = date
     elif field.type == "datetime":
-        type_ = datetime
+        result = datetime
     elif field.type == "base64":
-        type_ = bytes
+        result = bytes
     elif field.type == "picklist":
-        type_ = Literal[tuple(entry.value for entry in field.picklistValues)]
+        result = Literal[tuple(entry.value for entry in field.picklistValues)]
     elif field.type == "address":
-        type_ = Address
+        result = Address
     else:
         raise TypeError(f"unsupported field type: {field.type}")
     if field.length != 0:
-        type_ = Annotated[type_, MaxLen(field.length)]
+        result = Annotated[result, MaxLen(field.length)]
     if field.nillable:
-        type_ = Optional[type_]
-    return type_
+        result = Optional[result]
+    return result
 
 
 @datacls
@@ -120,7 +122,7 @@ async def sobject_resource(client: Client, name: str):
 
     datacls = make_datacls(
         f"{metadata.name}Resource",
-        [(field.name, _so_field_type(field)) for field in metadata.fields],
+        [(field.name, sobject_field_type(field)) for field in metadata.fields],
     )
 
     codec = get_codec(JSON, datacls)

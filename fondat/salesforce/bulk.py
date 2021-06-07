@@ -1,4 +1,4 @@
-"""..."""
+"""Fondat Salesforce bulk module."""
 
 import asyncio
 
@@ -12,7 +12,7 @@ from fondat.salesforce.jobs import Query, queries_resource
 from typing import Any, TypedDict
 
 
-_exclude_types = {"address"}
+_exclude_types = {"address", "location"}
 
 
 class SObjectQuery:
@@ -48,9 +48,9 @@ class SObjectQuery:
     async def info(self):
         return await self.query.get()
 
-    async def wait(self):
+    async def _await_complete(self):
         """Wait for job to be complete."""
-        while ((state := await self.info()).state) in {"UploadComplete", "InProgress"}:
+        while (state := (await self.info()).state) in {"UploadComplete", "InProgress"}:
             await asyncio.sleep(1)  # TODO: timeout
         if state != "JobComplete":
             raise RuntimeError(f"unexpected job state: {state}")

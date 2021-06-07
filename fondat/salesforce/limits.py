@@ -1,4 +1,4 @@
-"""..."""
+"""Fondat Salesforce limits module."""
 
 from fondat.codec import get_codec, JSON
 from fondat.data import datacls

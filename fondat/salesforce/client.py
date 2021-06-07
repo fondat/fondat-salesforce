@@ -2,11 +2,15 @@
 
 import aiohttp
 import fondat.error
+import logging
 
 from collections.abc import Callable, Coroutine
 from contextlib import asynccontextmanager
 from fondat.salesforce.oauth import Token
 from typing import Any, Optional
+
+
+_logger = logging.getLogger(__name__)
 
 
 class Client:
@@ -60,11 +64,11 @@ class Client:
 
         for retry in range(2):  # retry for token refresh
             if not self.token:
-                self.token = await self.authenticate()
+                self.token = await self.authenticate(self.session)
             headers["Authorization"] = f"Bearer {self.token.access_token}"
             url = f"{self.token.instance_url}{path}"
             try:
-                print(f"{method} {url} {json=}")
+                _logger.debug("%s %s", method, url)
                 async with self.session.request(
                     method=method,
                     url=url,

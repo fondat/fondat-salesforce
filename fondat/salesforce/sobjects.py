@@ -11,57 +11,66 @@ from fondat.validation import MaxLen
 from typing import Annotated, Any, Literal, Optional
 
 
-FieldType = Literal[
-    "id",
-    "string",
-    "int",
-    "double",
-    "boolean",
-    "date",
-    "datetime",
-    "base64",
-    "reference",
-    "currency",
-    "textarea",
-    "percent",
-    "phone",
-    "url",
-    "email",
-    "combobox",
-    "picklist",
-    "multipicklist",
-    "anyType",
-    "location",
-    "address",
-]
-
-
 @datacls
 class PicklistEntry:
     active: bool
-    label: str
+    label: Optional[str]
     value: str
 
 
 @datacls
-class Address:
-    geocodeAccuracy: Optional[str]
+class Location:
+    latitude: Optional[float]
+    longitude: Optional[float]
+
+
+@datacls
+class Address(Location):
+    accuracy: Optional[str]
     city: Optional[str]
     country: Optional[str]
     countryCode: Optional[str]
-    latitude: Optional[float]
-    longitude: Optional[float]
     postalCode: Optional[str]
     state: Optional[str]
     stateCode: Optional[str]
     street: Optional[str]
 
 
+_type_mappings = {
+    "address": Address,
+    "anyType": Any,
+    "base64": bytes,
+    "boolean": bool,
+    "combobox": str,
+    "currency": float,
+    "date": date,
+    "datetime": datetime,
+    "double": float,
+    "email": str,
+    "encryptedstring": str,
+    "id": str,
+    "int": int,
+    "location": Location,
+    "multipicklist": str,
+    "percent": float,
+    "phone": str,
+    "picklist": str,
+    "reference": str,
+    "time": str,
+    "string": str,
+    "textarea": str,
+    "url": str,
+}
+
+
+FieldType = Literal[tuple(_type_mappings.keys())]
+
+
 @datacls
 class Field:
     name: str
     type: FieldType
-    label: str
+    label: Optional[str]
     nillable: bool
     length: int
     picklistValues: list[PicklistEntry]
@@ -78,25 +87,9 @@ class SObjectMetadata:
 def sobject_field_type(field: Field) -> Any:
     """Return the Python type associated with an SObject field."""
 
-    if field.type in {"email", "id", "reference", "phone", "string", "textarea", "url"}:
-        result = str
-    elif field.type == "int":
-        result = int
-    elif field.type in {"currency", "double", "percent"}:
-        result = float
-    elif field.type == "boolean":
-        result = bool
-    elif field.type == "date":
-        result = date
-    elif field.type == "datetime":
-        result = datetime
-    elif field.type == "base64":
-        result = bytes
-    elif field.type == "picklist":
-        result = Literal[tuple(entry.value for entry in field.picklistValues)]
-    elif field.type == "address":
-        result = Address
-    else:
+    try:
+        result = _type_mappings[field.type]
+    except KeyError:
         raise TypeError(f"unsupported field type: {field.type}")
     if field.length != 0:
         result = Annotated[result, MaxLen(field.length)]

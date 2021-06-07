@@ -1,4 +1,4 @@
-"""Module to access Salesforce Lightning REST resources."""
+"""Fondat Salesforce service module."""
 
 from contextlib import contextmanager
 from fondat.codec import get_codec, JSON

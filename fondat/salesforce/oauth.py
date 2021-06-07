@@ -1,4 +1,4 @@
-"""..."""
+"""Fondat Salesforce OAuth module."""
 
 import aiohttp
 import fondat.codec
@@ -21,14 +21,13 @@ _token_codec = fondat.codec.get_codec(fondat.codec.JSON, Token)
 
 def password_authenticator(
     *,
-    session: aiohttp.ClientSession,
     endpoint: str = "https://login.salesforce.com",
     client_id: str,
     client_secret: str,
     username: str,
     password: str,
 ):
-    async def authenticate() -> Token:
+    async def authenticate(session: aiohttp.ClientSession) -> Token:
         async with await session.post(
             url=f"{endpoint}/services/oauth2/token",
             data={

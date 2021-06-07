@@ -1,4 +1,4 @@
-"""Module to asynchronously query large data sets."""
+"""Fondat Salesforce asynchronous jobs module."""
 
 import csv
 import http

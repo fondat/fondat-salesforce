@@ -8,7 +8,7 @@ target-version = ['py38']
 
 [tool.poetry]
 name = "fondat-salesforce"
-version = "3.0a3"
+version = "3.0a4"
 description = "Fondat package for Salesforce."
 readme = "README.md"
 authors = ["fondat-salesforce authors"]

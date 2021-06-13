@@ -1,4 +1,4 @@
-"""..."""
+"""Fondat Salesforce sObject module."""
 
 from collections.abc import Iterable
 from datetime import date, datetime

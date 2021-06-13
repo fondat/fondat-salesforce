@@ -68,7 +68,7 @@ tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>
 
 [[package]]
 name = "black"
-version = "21.5b2"
+version = "21.6b0"
 description = "The uncompromising code formatter."
 category = "dev"
 optional = false
@@ -152,7 +152,7 @@ python-versions = "*"
 
 [[package]]
 name = "fondat-core"
-version = "3.0b57"
+version = "3.0b62"
 description = "A foundation for asynchronous Python resource-oriented applications."
 category = "main"
 optional = false
@@ -166,7 +166,7 @@ wrapt = ">=1.12,<2.0"
 
 [[package]]
 name = "identify"
-version = "2.2.9"
+version = "2.2.10"
 description = "File identification library for Python"
 category = "dev"
 optional = false
@@ -480,8 +480,8 @@ attrs = [
     {file = "attrs-21.2.0.tar.gz", hash = "sha256:ef6aaac3ca6cd92904cdd0d83f629a15f18053ec84e6432106f7a4d04ae4f5fb"},
 ]
 black = [
-    {file = "black-21.5b2-py3-none-any.whl", hash = "sha256:e5cf21ebdffc7a9b29d73912b6a6a9a4df4ce70220d523c21647da2eae0751ef"},
-    {file = "black-21.5b2.tar.gz", hash = "sha256:1fc0e0a2c8ae7d269dfcf0c60a89afa299664f3e811395d40b1922dff8f854b5"},
+    {file = "black-21.6b0-py3-none-any.whl", hash = "sha256:dfb8c5a069012b2ab1e972e7b908f5fb42b6bbabcba0a788b86dc05067c7d9c7"},
+    {file = "black-21.6b0.tar.gz", hash = "sha256:dc132348a88d103016726fe360cb9ede02cecf99b76e3660ce6c596be132ce04"},
 ]
 cfgv = [
     {file = "cfgv-3.3.0-py2.py3-none-any.whl", hash = "sha256:b449c9c6118fe8cca7fa5e00b9ec60ba08145d281d52164230a69211c5d597a1"},
@@ -562,12 +562,12 @@ filelock = [
     {file = "filelock-3.0.12.tar.gz", hash = "sha256:18d82244ee114f543149c66a6e0c14e9c4f8a1044b5cdaadd0f82159d6a6ff59"},
 ]
 fondat-core = [
-    {file = "fondat-core-3.0b57.tar.gz", hash = "sha256:a4e60489936445fc1a767cffe8b1dc831a240d27163af2c4debabcb6060d89b7"},
-    {file = "fondat_core-3.0b57-py3-none-any.whl", hash = "sha256:c3df6bb258100775340524b372bdb4c6658ff10f4ddbc5f61f9bb194832a04f3"},
+    {file = "fondat-core-3.0b62.tar.gz", hash = "sha256:6d57547a76b0bd1b93f566cd413e491bd47621afcdb4424a0de12828b82db71c"},
+    {file = "fondat_core-3.0b62-py3-none-any.whl", hash = "sha256:3c79a4b51b4b9de280c8c0864dfc3e63f50d88d2b517d72b5e33600689d0cbed"},
 ]
 identify = [
-    {file = "identify-2.2.9-py2.py3-none-any.whl", hash = "sha256:96c57d493184daecc7299acdeef0ad7771c18a59931ea927942df393688fe849"},
-    {file = "identify-2.2.9.tar.gz", hash = "sha256:3a8493cf49cfe4b28d50865e38f942c11be07a7b0aab8e715073e17f145caacc"},
+    {file = "identify-2.2.10-py2.py3-none-any.whl", hash = "sha256:18d0c531ee3dbc112fa6181f34faa179de3f57ea57ae2899754f16a7e0ff6421"},
+    {file = "identify-2.2.10.tar.gz", hash = "sha256:5b41f71471bc738e7b586308c3fca172f78940195cb3bf6734c1e66fdac49306"},
 ]
 idna = [
     {file = "idna-3.2-py3-none-any.whl", hash = "sha256:14475042e284991034cb48e06f6851428fb14c4dc953acd9be9a5e95c7b6dd7a"},

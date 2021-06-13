@@ -28,10 +28,10 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.9"
 aiohttp = "^3.7.4"
-fondat-core = "^3.0b57"
+fondat-core = "^3.0b62"
 
 [tool.poetry.dev-dependencies]
-black = "^21.5b2"
+black = "^21.6b0"
 pre-commit = "^2.13"
 pytest = "^6.2"
 pytest-asyncio = "^0.14"

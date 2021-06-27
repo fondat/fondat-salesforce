@@ -26,9 +26,9 @@ jobs:
       run: poetry install -v
 
     - name: Test project
-      run: poetry run pytest --cov=fondat-salesforce tests/
       env:
           FONDAT_SALESFORCE_CLIENT_ID: {{ secrets.FONDAT_SALESFORCE_CLIENT_ID }}
           FONDAT_SALESFORCE_CLIENT_SECRET: {{ secrets.FONDAT_SALESFORCE_CLIENT_SECRET }}
           FONDAT_SALESFORCE_USERNAME: {{ secrets.FONDAT_SALESFORCE_USERNAME }}
           FONDAT_SALESFORCE_PASSWORD: {{ secrets.FONDAT_SALESFORCE_PASSWORD }}
+      run: poetry run pytest --cov=fondat-salesforce tests/

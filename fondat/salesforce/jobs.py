@@ -1,14 +1,14 @@
 """Fondat Salesforce asynchronous jobs module."""
 
 import csv
+import fondat.error
 import http
 import io
 
-from collections.abc import Iterable
 from datetime import datetime
-from fondat.codec import get_codec, JSON, String
+from fondat.codec import get_codec, JSON
 from fondat.data import datacls
-from fondat.error import InternalServerError, NotFoundError, reraise
+from fondat.error import InternalServerError, NotFoundError
 from fondat.resource import resource, operation, query, mutation
 from fondat.salesforce.client import Client
 from typing import Literal, Optional
@@ -87,7 +87,7 @@ def queries_resource(client: Client):
             """Get information about a query job."""
 
             async with client.request("GET", self.path) as response:
-                with reraise((TypeError, ValueError), InternalServerError):
+                with fondat.error.replace((TypeError, ValueError), InternalServerError):
                     return get_codec(JSON, Query).decode(await response.json())
 
         @operation
@@ -140,7 +140,7 @@ def queries_resource(client: Client):
             """Get information about all query jobs."""
 
             params = {"jobType": "V2Query"}
-            with reraise((TypeError, ValueError), InternalServerError):
+            with fondat.error.replace((TypeError, ValueError), InternalServerError):
                 async with client.request(
                     method="GET", path=cursor.decode() if cursor else path, params=params
                 ) as response:

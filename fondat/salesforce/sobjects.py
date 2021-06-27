@@ -1,12 +1,10 @@
 """Fondat Salesforce sObject module."""
 
-from collections.abc import Iterable
 from datetime import date, datetime
 from fondat.codec import JSON, get_codec
 from fondat.data import datacls, make_datacls
 from fondat.resource import resource, operation, query
 from fondat.salesforce.client import Client
-from fondat.security import Policy
 from fondat.validation import MaxLen
 from typing import Annotated, Any, Literal, Optional
 

@@ -4,6 +4,7 @@ import aiohttp
 import fondat.codec
 
 from fondat.data import datacls
+from fondat.error import UnauthorizedError
 
 
 @datacls
@@ -38,6 +39,9 @@ def password_authenticator(
                 "password": password,
             },
         ) as response:
-            return _token_codec.decode(await response.json())
+            json = await response.json()
+            if response.status == 200:
+                return _token_codec.decode(json)
+            raise UnauthorizedError(json["error"])
 
     return authenticate

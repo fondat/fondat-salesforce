@@ -1,9 +1,10 @@
 """Fondat Salesforce service module."""
 
-from contextlib import contextmanager
+import fondat.error
+
 from fondat.codec import get_codec, JSON
 from fondat.data import datacls
-from fondat.error import reraise, InternalServerError, NotFoundError
+from fondat.error import InternalServerError, NotFoundError
 from fondat.resource import resource, query
 from fondat.salesforce.client import Client
 
@@ -40,7 +41,7 @@ def service_resource(client: Client):
                     async with client.request(
                         method="GET", path=f"/{version.url}/"
                     ) as response:
-                        with reraise((TypeError, ValueError), InternalServerError):
+                        with fondat.error.replace((TypeError, ValueError), InternalServerError):
                             return await response.json()
             raise NotFoundError(f"unknown version: {client.version}")
 

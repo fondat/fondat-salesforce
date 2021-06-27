@@ -8,7 +8,7 @@ from collections.abc import Iterable
 from fondat.csv import typeddict_codec
 from fondat.salesforce.client import Client
 from fondat.salesforce.sobjects import SObjectMetadata, sobject_field_type
-from fondat.salesforce.jobs import Query, queries_resource
+from fondat.salesforce.jobs import queries_resource
 from typing import Any, TypedDict
 
 

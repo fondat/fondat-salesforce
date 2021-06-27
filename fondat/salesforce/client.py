@@ -6,8 +6,7 @@ import logging
 
 from collections.abc import Callable, Coroutine
 from contextlib import asynccontextmanager
-from fondat.salesforce.oauth import Token
-from typing import Any, Optional
+from typing import Any
 
 
 _logger = logging.getLogger(__name__)

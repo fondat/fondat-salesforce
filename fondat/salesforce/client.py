@@ -6,6 +6,7 @@ import logging
 
 from collections.abc import Callable, Coroutine
 from contextlib import asynccontextmanager
+from fondat.error import error_for_status
 from typing import Any
 
 
@@ -67,7 +68,6 @@ class Client:
             headers["Authorization"] = f"Bearer {self.token.access_token}"
             url = f"{self.token.instance_url}{path}"
             try:
-                _logger.debug("%s %s", method, url)
                 async with self.session.request(
                     method=method,
                     url=url,
@@ -76,10 +76,9 @@ class Client:
                     json=json,
                     compress=bool(json),
                 ) as response:
+                    _logger.debug("%s %s %d", method, url, response.status)
                     if 400 <= response.status <= 599:
-                        raise fondat.error.error_for_status(response.status)(
-                            await response.text()
-                        )
+                        raise error_for_status(response.status)(await response.text())
                     elif 200 <= response.status <= 299:
                         yield response
                         return
@@ -90,4 +89,5 @@ class Client:
             except fondat.error.UnauthorizedError:
                 if retry:
                     raise
+                _logger.debug("unauthorized; retrying authentication")
                 self.token = None

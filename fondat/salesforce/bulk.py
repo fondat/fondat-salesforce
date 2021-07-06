@@ -7,7 +7,7 @@ from collections import deque
 from collections.abc import Iterable
 from fondat.csv import typeddict_codec
 from fondat.salesforce.client import Client
-from fondat.salesforce.sobjects import SObjectMetadata, sobject_field_type
+from fondat.salesforce.sobjects import SObject, sobject_field_type
 from fondat.salesforce.jobs import queries_resource
 from typing import Any, TypedDict
 
@@ -21,14 +21,14 @@ class SObjectQuery:
     def __init__(
         self,
         client: Client,
-        metadata: SObjectMetadata,
+        sobject: SObject,
         fields: Iterable[str] = None,
         where: str = None,
     ):
         self.client = client
-        indexed = {field.name: field for field in metadata.fields}
+        indexed = {field.name: field for field in sobject.fields}
         if fields is None:
-            fields = [f.name for f in metadata.fields if f.type not in _exclude_types]
+            fields = [f.name for f in sobject.fields if f.type not in _exclude_types]
         if len(fields) == 0:
             raise ValueError("you must query at least one field")
         for name in fields:
@@ -37,7 +37,7 @@ class SObjectQuery:
             if field.type in _exclude_types:
                 raise ValueError(f"cannot query {field.type} type field: {name}")
         self.td = TypedDict("QueryDict", {f: sobject_field_type(indexed[f]) for f in fields})
-        self.stmt = f"SELECT {', '.join(fields)} FROM {metadata.name}"
+        self.stmt = f"SELECT {', '.join(fields)} FROM {sobject.name}"
         if where is not None:
             self.stmt += f" WHERE {where}"
         self.query = None

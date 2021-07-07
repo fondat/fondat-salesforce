@@ -2,7 +2,7 @@
 
 from datetime import date, datetime
 from fondat.codec import JSON, get_codec
-from fondat.data import datacls, derive_datacls, make_datacls
+from fondat.data import datacls, make_datacls
 from fondat.error import NotFoundError
 from fondat.resource import resource, operation, query
 from fondat.salesforce.client import Client
@@ -213,9 +213,7 @@ def sobject_field_type(field: Field) -> Any:
         raise TypeError(f"unsupported field type: {field.type}")
     if field.length != 0:
         result = Annotated[result, MaxLen(field.length)]
-    if field.nillable:
-        result = Optional[result]
-    return result
+    return Optional[result]
 
 
 def sobjects_metadata_resource(client: Client):

@@ -87,8 +87,7 @@ async def test_invalid_sobject(client):
 
 
 async def test_sobjects_describe_global(client):
-    resource = fondat.salesforce.sobjects.sobjects_metadata_resource(client)
-    await resource.get()
+    await fondat.salesforce.sobjects.sobjects_metadata_resource(client).get()
 
 
 async def test_sobjects_describe_common(client):

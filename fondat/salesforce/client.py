@@ -6,7 +6,6 @@ import logging
 
 from collections.abc import Callable, Coroutine
 from contextlib import asynccontextmanager
-from fondat.error import error_for_status
 from typing import Any
 
 
@@ -78,7 +77,7 @@ class Client:
                 ) as response:
                     _logger.debug("%s %s %d", method, url, response.status)
                     if 400 <= response.status <= 599:
-                        raise error_for_status(response.status)(await response.text())
+                        raise fondat.error.errors[response.status](await response.text())
                     elif 200 <= response.status <= 299:
                         yield response
                         return

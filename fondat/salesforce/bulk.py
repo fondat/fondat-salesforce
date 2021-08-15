@@ -24,8 +24,10 @@ class SObjectQuery:
         sobject: SObject,
         fields: Iterable[str] = None,
         where: str = None,
+        page_size: int = None,
     ):
         self.client = client
+        self.page_size = page_size
         indexed = {field.name: field for field in sobject.fields}
         if fields is None:
             fields = [f.name for f in sobject.fields if f.type not in _exclude_types]
@@ -75,7 +77,7 @@ class SObjectQuery:
         return self
 
     async def _next_page(self):
-        page = await self.query.results(cursor=self.cursor)
+        page = await self.query.results(limit=self.page_size or 1000, cursor=self.cursor)
         self.results = deque(page.items)
         self.cursor = page.cursor
         self.codec = typeddict_codec(self.td, self.results.popleft())

@@ -4,7 +4,7 @@ import asyncio
 
 from contextlib import suppress
 from collections import deque
-from collections.abc import Iterable
+from collections.abc import Sequence
 from fondat.csv import typeddict_codec
 from fondat.salesforce.client import Client
 from fondat.salesforce.sobjects import SObject, sobject_field_type
@@ -22,8 +22,9 @@ class SObjectQuery:
         self,
         client: Client,
         sobject: SObject,
-        fields: Iterable[str] = None,
+        fields: Sequence[str] = None,
         where: str = None,
+        order: Sequence[str] = None,
         page_size: int = None,
     ):
         self.client = client
@@ -40,8 +41,10 @@ class SObjectQuery:
                 raise ValueError(f"cannot query {field.type} type field: {name}")
         self.td = TypedDict("QueryDict", {f: sobject_field_type(indexed[f]) for f in fields})
         self.stmt = f"SELECT {', '.join(fields)} FROM {sobject.name}"
-        if where is not None:
+        if where:
             self.stmt += f" WHERE {where}"
+        if order:
+            self.stmt += f" ORDER BY {', '.join(order)}"
         self.query = None
         self.results = None
         self.header = None

@@ -75,7 +75,9 @@ async def test_sobject_get(client):
 async def test_bulk(client):
     accounts = await fondat.salesforce.sobjects.sobject_data_resource(client, "Account")
     metadata = await accounts.describe()
-    async with fondat.salesforce.bulk.SObjectQuery(client, metadata, fields=("Id",)) as query:
+    async with fondat.salesforce.bulk.SObjectQuery(
+        client, metadata, fields=("Id", "Name", "Website"), order=("Name", "Website")
+    ) as query:
         async for row in query:
             assert row["Id"]
             break

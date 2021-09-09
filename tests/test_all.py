@@ -38,7 +38,7 @@ async def authenticator():
 async def client(authenticator):
     async with aiohttp.ClientSession() as session:
         yield await fondat.salesforce.client.Client.create(
-            session=session, version="51.0", authenticate=authenticator
+            session=session, version="52.0", authenticate=authenticator
         )
 
 

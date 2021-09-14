@@ -129,9 +129,17 @@ class ChildRelationship:
 
 @datacls
 class URLs:
-    describe: str
-    sobject: str
-    rowTemplate: str
+    approvalLayouts: Optional[str]
+    compactLayouts: Optional[str]
+    describe: Optional[str]
+    layouts: Optional[str]
+    listviews: Optional[str]
+    quickActions: Optional[str]
+    rowTemplate: Optional[str]
+    sobject: Optional[str]
+    uiDetailTemplate: Optional[str]
+    uiEditTemplate: Optional[str]
+    uiNewRecord: Optional[str]
 
 
 @datacls

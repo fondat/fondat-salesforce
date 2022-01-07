@@ -41,8 +41,7 @@ def service_resource(client: Client):
                     async with client.request(
                         method="GET", path=f"/{version.url}/"
                     ) as response:
-                        with fondat.error.replace((TypeError, ValueError), InternalServerError):
-                            return await response.json()
+                        return await response.json()
             raise NotFoundError(f"unknown version: {client.version}")
 
         @query

@@ -1,14 +1,13 @@
 """Fondat Salesforce asynchronous jobs module."""
 
 import csv
-import fondat.error
 import http
 import io
 
 from datetime import datetime
 from fondat.codec import get_codec, JSON
 from fondat.data import datacls
-from fondat.error import InternalServerError, NotFoundError
+from fondat.error import NotFoundError
 from fondat.resource import resource, operation, query, mutation
 from fondat.salesforce.client import Client
 from typing import Literal, Optional
@@ -87,8 +86,7 @@ def queries_resource(client: Client):
             """Get information about a query job."""
 
             async with client.request("GET", self.path) as response:
-                with fondat.error.replace((TypeError, ValueError), InternalServerError):
-                    return get_codec(JSON, Query).decode(await response.json())
+                return get_codec(JSON, Query).decode(await response.json())
 
         @operation
         async def delete(self):
@@ -140,11 +138,10 @@ def queries_resource(client: Client):
             """Get information about all query jobs."""
 
             params = {"jobType": "V2Query"}
-            with fondat.error.replace((TypeError, ValueError), InternalServerError):
-                async with client.request(
-                    method="GET", path=cursor.decode() if cursor else path, params=params
-                ) as response:
-                    json = get_codec(JSON, _QueriesResponse).decode(await response.json())
+            async with client.request(
+                method="GET", path=cursor.decode() if cursor else path, params=params
+            ) as response:
+                json = get_codec(JSON, _QueriesResponse).decode(await response.json())
             return QueriesPage(
                 items=json.records,
                 cursor=json.nextRecordsUrl.encode() if json.nextRecordsUrl else None,

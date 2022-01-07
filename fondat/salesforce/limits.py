@@ -33,7 +33,6 @@ def limits_resource(client: Client) -> Any:
             """..."""
 
             async with client.request(method="GET", path=path) as response:
-                with fondat.error.replace((TypeError, ValueError), InternalServerError):
-                    return get_codec(JSON, Limits).decode(await response.json())
+                return get_codec(JSON, Limits).decode(await response.json())
 
     return LimitsResource()

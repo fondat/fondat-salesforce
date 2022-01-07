@@ -8,7 +8,7 @@ target-version = ['py310']
 
 [tool.poetry]
 name = "fondat-salesforce"
-version = "3.0b4"
+version = "3.0b5"
 description = "Fondat package for Salesforce."
 readme = "README.md"
 authors = ["fondat-salesforce authors"]
@@ -28,7 +28,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.9"
 aiohttp = "^3.8"
-fondat-core = "^3.0"
+fondat-core = "^3.0.16"
 
 [tool.poetry.dev-dependencies]
 black = "^21.12b0"

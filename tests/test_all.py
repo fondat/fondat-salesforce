@@ -74,13 +74,25 @@ async def test_sobject_get(client):
 
 async def test_bulk(client):
     accounts = await fondat.salesforce.sobjects.sobject_data_resource(client, "Account")
-    metadata = await accounts.describe()
+    sobject = await accounts.describe()
     async with fondat.salesforce.bulk.SObjectQuery(
-        client, metadata, fields=("Id", "Name", "Website"), order=("Name", "Website")
+        client, sobject, fields={"Id", "Name", "Website"}, order_by="Name, Website"
     ) as query:
         async for row in query:
             assert row["Id"]
             break
+
+
+async def test_bulk_limit(client):
+    accounts = await fondat.salesforce.sobjects.sobject_data_resource(client, "Account")
+    sobject = await accounts.describe()
+    count = 0
+    async with fondat.salesforce.bulk.SObjectQuery(
+        client, sobject, fields={"Id", "Name", "Website"}, limit=1
+    ) as query:
+        async for row in query:
+            count += 1
+    assert count == 1
 
 
 async def test_invalid_sobject(client):

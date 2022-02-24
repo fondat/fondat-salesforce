@@ -9,23 +9,41 @@ from fondat.csv import typeddict_codec
 from fondat.salesforce.client import Client
 from fondat.salesforce.sobjects import SObject, sobject_field_type
 from fondat.salesforce.jobs import queries_resource
-from typing import Any, TypedDict
+from time import time
+from typing import Any, Optional, TypedDict
 
 
 _exclude_types = {"address", "location"}
 
 
 class SObjectQuery:
-    """..."""
+    """
+    Performs an asynchronous bulk data query.
+
+    Parameters:
+    • client: client object through which to perform queries
+    • sobject: Salesforce object metadata
+    • fields: names of fields to be selected
+    • where: query conditon expression
+    • order_by: order of query results
+    • limit: maximum number of rows in query results
+    • offset: starting row offset of query results
+    • page_size: number of rows to retrieve per page
+    • timeout: seconds to wait for query job to complete
+    """
 
     def __init__(
         self,
         client: Client,
         sobject: SObject,
-        fields: Sequence[str] = None,
-        where: str = None,
-        order: Sequence[str] = None,
-        page_size: int = None,
+        *,
+        fields: Optional[set[str]] = None,
+        where: Optional[str] = None,
+        order_by: Optional[str] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+        page_size: Optional[int] = None,
+        timeout: Optional[int] = None,
     ):
         self.client = client
         self.page_size = page_size
@@ -43,8 +61,13 @@ class SObjectQuery:
         self.stmt = f"SELECT {', '.join(fields)} FROM {sobject.name}"
         if where:
             self.stmt += f" WHERE {where}"
-        if order:
-            self.stmt += f" ORDER BY {', '.join(order)}"
+        if order_by:
+            self.stmt += f" ORDER BY {order_by}"
+        if limit:
+            self.stmt += f" LIMIT {limit}"
+        if offset:
+            self.stmt += f" OFFSET {offset}"
+        self.timeout = timeout
         self.query = None
         self.results = None
         self.header = None
@@ -55,8 +78,13 @@ class SObjectQuery:
 
     async def _await_complete(self):
         """Wait for job to be complete."""
+        start = time()
+        sleep = 1
         while (state := (await self.info()).state) in {"UploadComplete", "InProgress"}:
-            await asyncio.sleep(1)  # TODO: timeout
+            if self.timeout and time() - start >= self.timeout:
+                raise asyncio.exceptions.TimeoutError
+            await asyncio.sleep(sleep)
+            sleep = min(sleep * 2, 60)
         if state != "JobComplete":
             raise RuntimeError(f"unexpected job state: {state}")
 
@@ -70,7 +98,8 @@ class SObjectQuery:
 
     async def __aexit__(self, *args):
         if self.results is None:
-            await self._await_complete()
+            with suppress(asyncio.exceptions.TimeoutError):
+                await self._await_complete()
         with suppress(Exception):
             await self.query.delete()
 

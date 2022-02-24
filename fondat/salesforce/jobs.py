@@ -103,7 +103,9 @@ def queries_resource(client: Client):
                 pass
 
         @query
-        async def results(self, limit: int = 1000, cursor: bytes = None) -> QueryResultsPage:
+        async def results(
+            self, limit: int = 1000, cursor: Optional[bytes] = None
+        ) -> QueryResultsPage:
             """
             Get results for a query job as CSV rows.
 
@@ -134,7 +136,7 @@ def queries_resource(client: Client):
         """Asynchronous query jobs."""
 
         @operation
-        async def get(self, cursor: bytes = None) -> QueriesPage:
+        async def get(self, cursor: Optional[bytes] = None) -> QueriesPage:
             """Get information about all query jobs."""
 
             params = {"jobType": "V2Query"}

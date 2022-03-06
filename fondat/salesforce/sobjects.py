@@ -6,6 +6,7 @@ from fondat.data import datacls, make_datacls
 from fondat.error import NotFoundError
 from fondat.resource import resource, operation, query
 from fondat.salesforce.client import Client
+from fondat.salesforce.limits import limits_resource
 from fondat.validation import MaxLen
 from typing import Annotated, Any, Literal, Optional
 
@@ -299,7 +300,14 @@ async def sobject_data_resource(client: Client, name: str):
         async def describe(self) -> SObject:
             return metadata
 
+        @query
+        async def count(self) -> int:
+            """Return number of sobject records."""
+            results = await limits_resource(client).record_count([metadata.name])
+            return results[metadata.name]
+
         def __getitem__(self, id) -> SObjectRecordResource:
+            """Return an sobject record resource."""
             return SObjectRecordResource(id)
 
     return SObjectResource()

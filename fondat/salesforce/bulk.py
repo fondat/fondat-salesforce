@@ -27,7 +27,6 @@ class SObjectQuery:
     • where: query conditon expression
     • order_by: order of query results
     • limit: maximum number of rows in query results
-    • offset: starting row offset of query results
     • page_size: number of rows to retrieve per page
     • timeout: seconds to wait for query job to complete
     """
@@ -41,7 +40,6 @@ class SObjectQuery:
         where: Optional[str] = None,
         order_by: Optional[str] = None,
         limit: Optional[int] = None,
-        offset: Optional[int] = None,
         page_size: Optional[int] = None,
         timeout: Optional[int] = None,
     ):
@@ -65,8 +63,6 @@ class SObjectQuery:
             self.stmt += f" ORDER BY {order_by}"
         if limit:
             self.stmt += f" LIMIT {limit}"
-        if offset:
-            self.stmt += f" OFFSET {offset}"
         self.timeout = timeout
         self.query = None
         self.results = None

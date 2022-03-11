@@ -63,14 +63,8 @@ async def test_limits(client):
 async def test_record_count(client):
     limits = fondat.salesforce.limits.limits_resource(client)
     counts = await limits.record_count(["Account", "Opportunity"])
-    accounts = await fondat.salesforce.sobjects.sobject_data_resource(
-        client=client, name="Account"
-    )
-    assert counts["Account"] == await accounts.count()
-    opportunities = await fondat.salesforce.sobjects.sobject_data_resource(
-        client=client, name="Opportunity"
-    )
-    assert counts["Opportunity"] == await opportunities.count()
+    assert counts["Account"] > 0
+    assert counts["Opportunity"] > 0
 
 
 async def test_versions(client):

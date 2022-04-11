@@ -12,7 +12,6 @@ import fondat.salesforce.sobjects
 import os
 
 from fondat.error import NotFoundError
-from fondat.pagination import paginate
 
 
 pytestmark = pytest.mark.asyncio
@@ -24,9 +23,10 @@ def event_loop():
 
 
 @pytest.fixture(scope="module")
-async def authenticator():
+async def password_authenticator():
     env = os.environ
     return fondat.salesforce.oauth.password_authenticator(
+        endpoint="https://login.salesforce.com",
         client_id=env["FONDAT_SALESFORCE_CLIENT_ID"],
         client_secret=env["FONDAT_SALESFORCE_CLIENT_SECRET"],
         username=env["FONDAT_SALESFORCE_USERNAME"],
@@ -35,10 +35,21 @@ async def authenticator():
 
 
 @pytest.fixture(scope="module")
-async def client(authenticator):
+async def refresh_authenticator():
+    env = os.environ
+    return fondat.salesforce.oauth.refresh_authenticator(
+        endpoint="https://login.salesforce.com",
+        client_id=env["FONDAT_SALESFORCE_CLIENT_ID"],
+        client_secret=env["FONDAT_SALESFORCE_CLIENT_SECRET"],
+        refresh_token=env["FONDAT_SALESFORCE_REFRESH_TOKEN"],
+    )
+
+
+@pytest.fixture(scope="module")
+async def client(refresh_authenticator):
     async with aiohttp.ClientSession() as session:
         yield await fondat.salesforce.client.Client.create(
-            session=session, version="52.0", authenticate=authenticator
+            session=session, version="54.0", authenticate=refresh_authenticator
         )
 
 

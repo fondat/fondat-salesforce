@@ -13,7 +13,7 @@ from urllib.parse import urlencode
 class Token:
     access_token: str
     signature: str
-    scope: str
+    scope: Optional[str]
     instance_url: str
     id: str
     token_type: str

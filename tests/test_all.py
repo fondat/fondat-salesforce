@@ -2,6 +2,7 @@ import pytest
 
 import aiohttp
 import asyncio
+import contextlib
 import fondat.salesforce.bulk
 import fondat.salesforce.client
 import fondat.salesforce.jobs
@@ -22,8 +23,7 @@ def event_loop():
     return asyncio.new_event_loop()
 
 
-@pytest.fixture(scope="module")
-async def password_authenticator():
+def _password_authenticator():
     env = os.environ
     return fondat.salesforce.oauth.password_authenticator(
         endpoint="https://login.salesforce.com",
@@ -35,7 +35,12 @@ async def password_authenticator():
 
 
 @pytest.fixture(scope="module")
-async def refresh_authenticator():
+def password_authenticator():
+    return _password_authenticator()
+
+
+@pytest.fixture(scope="module")
+def refresh_authenticator():
     env = os.environ
     return fondat.salesforce.oauth.refresh_authenticator(
         endpoint="https://login.salesforce.com",
@@ -45,12 +50,18 @@ async def refresh_authenticator():
     )
 
 
-@pytest.fixture(scope="module")
-async def client(refresh_authenticator):
+@contextlib.asynccontextmanager
+async def _client(authenticator):
     async with aiohttp.ClientSession() as session:
         yield await fondat.salesforce.client.Client.create(
-            session=session, version="54.0", authenticate=refresh_authenticator
+            session=session, version="54.0", authenticate=authenticator
         )
+
+
+@pytest.fixture(scope="module")
+async def client(refresh_authenticator):
+    async with _client(refresh_authenticator) as client:
+        yield client
 
 
 async def test_sobject_metadata(client):
@@ -135,6 +146,11 @@ async def test_invalid_sobjects_metadata(client):
     sobjects = fondat.salesforce.sobjects.sobjects_metadata_resource(client)
     with pytest.raises(NotFoundError):
         await sobjects["account"].describe()  # lower case
+
+
+async def test_password_authenticator():
+    async with _client(_password_authenticator()) as client:
+        assert await fondat.salesforce.service.service_resource(client).versions()
 
 
 # async def test_sobjects_describe_all(client):

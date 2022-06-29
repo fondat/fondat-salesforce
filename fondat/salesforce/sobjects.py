@@ -4,35 +4,35 @@ from datetime import date, datetime
 from fondat.codec import JSON, get_codec
 from fondat.data import datacls, make_datacls
 from fondat.error import NotFoundError
-from fondat.resource import resource, operation, query
+from fondat.resource import operation, query, resource
 from fondat.salesforce.client import Client
 from fondat.validation import MaxLen
-from typing import Annotated, Any, Literal, Optional
+from typing import Annotated, Any, Literal
 
 
 @datacls
 class PicklistEntry:
     active: bool
-    label: Optional[str]
+    label: str | None
     value: str
 
 
 @datacls
 class Location:
-    latitude: Optional[float]
-    longitude: Optional[float]
+    latitude: float | None
+    longitude: float | None
 
 
 @datacls
 class Address(Location):
-    accuracy: Optional[str]
-    city: Optional[str]
-    country: Optional[str]
-    countryCode: Optional[str]
-    postalCode: Optional[str]
-    state: Optional[str]
-    stateCode: Optional[str]
-    street: Optional[str]
+    accuracy: str | None
+    city: str | None
+    country: str | None
+    countryCode: str | None
+    postalCode: str | None
+    state: str | None
+    stateCode: str | None
+    street: str | None
 
 
 _type_mappings = {
@@ -129,17 +129,17 @@ class ChildRelationship:
 
 @datacls
 class URLs:
-    approvalLayouts: Optional[str]
-    compactLayouts: Optional[str]
-    describe: Optional[str]
-    layouts: Optional[str]
-    listviews: Optional[str]
-    quickActions: Optional[str]
-    rowTemplate: Optional[str]
-    sobject: Optional[str]
-    uiDetailTemplate: Optional[str]
-    uiEditTemplate: Optional[str]
-    uiNewRecord: Optional[str]
+    approvalLayouts: str | None
+    compactLayouts: str | None
+    describe: str | None
+    layouts: str | None
+    listviews: str | None
+    quickActions: str | None
+    rowTemplate: str | None
+    sobject: str | None
+    uiDetailTemplate: str | None
+    uiEditTemplate: str | None
+    uiNewRecord: str | None
 
 
 @datacls
@@ -186,7 +186,7 @@ class SObject:
     hasSubtypes: bool
     isInterface: bool
     isSubtype: bool
-    keyPrefix: Optional[str]
+    keyPrefix: str | None
     label: str
     labelPlural: str
     layoutable: bool
@@ -221,7 +221,7 @@ def sobject_field_type(field: Field) -> Any:
         raise TypeError(f"unsupported field type: {field.type}")
     if field.length != 0:
         result = Annotated[result, MaxLen(field.length)]
-    return Optional[result]
+    return result | None
 
 
 def sobjects_metadata_resource(client: Client):

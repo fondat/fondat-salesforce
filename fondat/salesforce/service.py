@@ -1,11 +1,9 @@
 """Fondat Salesforce service module."""
 
-import fondat.error
-
-from fondat.codec import get_codec, JSON
+from fondat.codec import JSON, get_codec
 from fondat.data import datacls
-from fondat.error import InternalServerError, NotFoundError
-from fondat.resource import resource, query
+from fondat.error import NotFoundError
+from fondat.resource import query, resource
 from fondat.salesforce.client import Client
 
 

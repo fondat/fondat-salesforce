@@ -1,9 +1,9 @@
 """Fondat Salesforce limits module."""
 
 from collections.abc import Iterable
-from fondat.codec import get_codec, JSON, String
+from fondat.codec import JSON, String, get_codec
 from fondat.data import datacls
-from fondat.resource import resource, operation, query
+from fondat.resource import operation, query, resource
 from fondat.salesforce.client import Client
 from typing import Any
 

@@ -5,12 +5,12 @@ import http
 import io
 
 from datetime import datetime
-from fondat.codec import get_codec, JSON
+from fondat.codec import JSON, get_codec
 from fondat.data import datacls
 from fondat.error import NotFoundError
-from fondat.resource import resource, operation, query, mutation
+from fondat.resource import mutation, operation, query, resource
 from fondat.salesforce.client import Client
-from typing import Literal, Optional
+from typing import Literal
 
 
 Operation = Literal["query", "queryAll"]
@@ -28,45 +28,45 @@ class Query:
     object: str
     createdById: str
     createdDate: datetime
-    systemModStamp: Optional[datetime]
+    systemModStamp: datetime | None
     state: QueryState
     concurrencyMode: ConcurrencyMode
     contentType: ContentType
     apiVersion: float
-    jobType: Optional[str]
+    jobType: str | None
     lineEnding: LineEnding
     columnDelimiter: ColumnDelimiter
-    numberRecordsProcessed: Optional[int]
-    retries: Optional[int]
-    totalProcessingTime: Optional[int]
+    numberRecordsProcessed: int | None
+    retries: int | None
+    totalProcessingTime: int | None
 
 
 @datacls
 class QueryResultsPage:
     items: list[list[str]]
-    cursor: Optional[bytes]
+    cursor: bytes | None
 
 
 @datacls
 class QueriesPage:
     items: list[Query]
-    cursor: Optional[bytes]
+    cursor: bytes | None
 
 
 @datacls
 class _QueriesResponse:
     done: bool
     records: list[Query]
-    nextRecordsUrl: Optional[str]
+    nextRecordsUrl: str | None
 
 
 @datacls
 class _CreateQueryRequest:
     operation: Operation
     query: str
-    contentType: Optional[ContentType]
-    columnDelimiter: Optional[ColumnDelimiter]
-    lineEnding: Optional[LineEnding]
+    contentType: ContentType | None
+    columnDelimiter: ColumnDelimiter | None
+    lineEnding: LineEnding | None
 
 
 def queries_resource(client: Client):
@@ -104,7 +104,7 @@ def queries_resource(client: Client):
 
         @query
         async def results(
-            self, limit: int = 1000, cursor: Optional[bytes] = None
+            self, limit: int = 1000, cursor: bytes | None = None
         ) -> QueryResultsPage:
             """
             Get results for a query job as CSV rows.
@@ -136,7 +136,7 @@ def queries_resource(client: Client):
         """Asynchronous query jobs."""
 
         @operation
-        async def get(self, cursor: Optional[bytes] = None) -> QueriesPage:
+        async def get(self, cursor: bytes | None = None) -> QueriesPage:
             """Get information about all query jobs."""
 
             params = {"jobType": "V2Query"}

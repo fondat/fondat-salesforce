@@ -7,7 +7,7 @@ import logging
 
 from collections.abc import Callable, Coroutine
 from contextlib import asynccontextmanager
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 
 _logger = logging.getLogger(__name__)
@@ -65,8 +65,8 @@ class Client:
         method: Literal["GET", "PUT", "POST", "DELETE", "PATCH"],
         path: str,
         *,
-        headers: Optional[dict[str, str]] = None,
-        params: Optional[dict[str, str]] = None,
+        headers: dict[str, str] | None = None,
+        params: dict[str, str] | None = None,
         json: Any = None,
     ) -> Any:
         """

@@ -1,5 +1,3 @@
-import pytest
-
 import aiohttp
 import asyncio
 import contextlib
@@ -11,6 +9,7 @@ import fondat.salesforce.oauth
 import fondat.salesforce.service as service
 import fondat.salesforce.sobjects
 import os
+import pytest
 
 from fondat.error import NotFoundError
 

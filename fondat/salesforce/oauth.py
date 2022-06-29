@@ -5,7 +5,7 @@ import fondat.codec
 
 from fondat.data import datacls
 from fondat.error import UnauthorizedError
-from typing import Optional, Literal
+from typing import Literal, Optional
 from urllib.parse import urlencode
 
 

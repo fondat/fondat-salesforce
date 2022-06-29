@@ -2,15 +2,14 @@
 
 import asyncio
 
-from contextlib import suppress
 from collections import deque
-from collections.abc import Sequence
+from contextlib import suppress
 from fondat.csv import typeddict_codec
 from fondat.salesforce.client import Client
-from fondat.salesforce.sobjects import SObject, sobject_field_type
 from fondat.salesforce.jobs import queries_resource
+from fondat.salesforce.sobjects import SObject, sobject_field_type
 from time import time
-from typing import Any, Optional, TypedDict
+from typing import Any, TypedDict
 
 
 _exclude_types = {"address", "location"}
@@ -36,12 +35,12 @@ class SObjectQuery:
         client: Client,
         sobject: SObject,
         *,
-        fields: Optional[set[str]] = None,
-        where: Optional[str] = None,
-        order_by: Optional[str] = None,
-        limit: Optional[int] = None,
-        page_size: Optional[int] = None,
-        timeout: Optional[int] = None,
+        fields: set[str] | None = None,
+        where: str | None = None,
+        order_by: str | None = None,
+        limit: int | None = None,
+        page_size: int | None = None,
+        timeout: int | None = None,
     ):
         self.client = client
         self.page_size = page_size

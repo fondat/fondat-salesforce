@@ -1,6 +1,6 @@
 """Fondat Salesforce service module."""
 
-from fondat.codec import JSON, get_codec
+from fondat.codec import JSONCodec
 from fondat.data import datacls
 from fondat.error import NotFoundError
 from fondat.resource import query, resource
@@ -47,6 +47,6 @@ def service_resource(client: Client):
             """List available REST API versions."""
 
             async with client.request(method="GET", path="/services/data/") as response:
-                return get_codec(JSON, list[Version]).decode(await response.json())
+                return JSONCodec.get(list[Version]).decode(await response.json())
 
     return ServiceResource()

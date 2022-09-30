@@ -147,11 +147,6 @@ async def test_invalid_sobjects_metadata(client):
         await sobjects["account"].describe()  # lower case
 
 
-async def test_password_authenticator():
-    async with _client(_password_authenticator()) as client:
-        assert await fondat.salesforce.service.service_resource(client).versions()
-
-
 # async def test_sobjects_describe_all(client):
 #     sobjects = fondat.salesforce.sobjects.sobjects_metadata_resource(client)
 #     for name in [sobject.name for sobject in (await sobjects.get()).sobjects]:

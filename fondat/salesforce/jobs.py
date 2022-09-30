@@ -5,7 +5,7 @@ import http
 import io
 
 from datetime import datetime
-from fondat.codec import JSON, get_codec
+from fondat.codec import JSONCodec
 from fondat.data import datacls
 from fondat.error import NotFoundError
 from fondat.resource import mutation, operation, query, resource
@@ -86,7 +86,7 @@ def queries_resource(client: Client):
             """Get information about a query job."""
 
             async with client.request("GET", self.path) as response:
-                return get_codec(JSON, Query).decode(await response.json())
+                return JSONCodec.get(Query).decode(await response.json())
 
         @operation
         async def delete(self):
@@ -143,7 +143,7 @@ def queries_resource(client: Client):
             async with client.request(
                 method="GET", path=cursor.decode() if cursor else path, params=params
             ) as response:
-                json = get_codec(JSON, _QueriesResponse).decode(await response.json())
+                json = JSONCodec.get(_QueriesResponse).decode(await response.json())
             return QueriesPage(
                 items=json.records,
                 cursor=json.nextRecordsUrl.encode() if json.nextRecordsUrl else None,
@@ -157,9 +157,9 @@ def queries_resource(client: Client):
             async with client.request(
                 method="POST",
                 path=f"{path}/",
-                json=get_codec(JSON, _CreateQueryRequest).encode(request),
+                json=JSONCodec.get(_CreateQueryRequest).encode(request),
             ) as response:
-                return get_codec(JSON, Query).decode(await response.json())
+                return JSONCodec.get(Query).decode(await response.json())
 
         def __getitem__(self, id: str) -> QueryResource:
             return QueryResource(id)

@@ -1,7 +1,7 @@
 """Fondat Salesforce sObject module."""
 
 from datetime import date, datetime
-from fondat.codec import JSON, get_codec
+from fondat.codec import JSONCodec
 from fondat.data import datacls, make_datacls
 from fondat.error import NotFoundError
 from fondat.resource import operation, query, resource
@@ -242,7 +242,7 @@ def sobjects_metadata_resource(client: Client):
             async with client.request(
                 method="GET", path=f"{path}/{self.name}/describe"
             ) as response:
-                metadata = get_codec(JSON, SObject).decode(await response.json())
+                metadata = JSONCodec.get(SObject).decode(await response.json())
             if metadata.name != self.name:
                 raise NotFoundError
             return metadata
@@ -255,7 +255,7 @@ def sobjects_metadata_resource(client: Client):
         async def get(self) -> SObjects:
             """Get a list of objects."""
             async with client.request(method="GET", path=f"{path}/") as response:
-                return get_codec(JSON, SObjects).decode(await response.json())
+                return JSONCodec.get(SObjects).decode(await response.json())
 
         def __getitem__(self, name: str) -> SObjectMetadataResource:
             return SObjectMetadataResource(name)
@@ -276,7 +276,7 @@ async def sobject_data_resource(client: Client, name: str):
         [(field.name, sobject_field_type(field)) for field in metadata.fields],
     )
 
-    codec = get_codec(JSON, datacls)
+    codec = JSONCodec.get(datacls)
 
     @resource
     class SObjectRecordResource:

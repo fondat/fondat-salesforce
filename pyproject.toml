@@ -8,7 +8,7 @@ target-version = ['py310']
 
 [tool.poetry]
 name = "fondat-salesforce"
-version = "4.0a1"
+version = "4.0b1"
 description = "Fondat package for Salesforce."
 readme = "README.md"
 authors = ["fondat-salesforce authors"]
@@ -17,7 +17,7 @@ documentation = "https://github.com/fondat/fondat-salesforce/wiki"
 license = "MIT"
 keywords = ["asgi", "framework", "resource", "openapi"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
 ]

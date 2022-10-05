@@ -3,6 +3,7 @@
 import aiohttp
 import fondat.codec
 
+from fondat.codec import JSONCodec
 from fondat.data import datacls
 from fondat.error import UnauthorizedError
 from typing import Literal, Optional
@@ -22,7 +23,7 @@ class Token:
     state: Optional[str]
 
 
-_token_codec = fondat.codec.get_codec(fondat.codec.JSON, Token)
+_token_codec = JSONCodec.get(Token)
 
 
 def generate_authorization_url(

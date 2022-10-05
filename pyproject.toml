@@ -28,7 +28,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.10"
 aiohttp = "^3.8"
-fondat = "^4.0b2"
+fondat = "^4.0b4"
 
 [tool.poetry.dev-dependencies]
 black = "^22.6"

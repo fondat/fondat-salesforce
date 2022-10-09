@@ -8,7 +8,7 @@ target-version = ['py310']
 
 [tool.poetry]
 name = "fondat-salesforce"
-version = "4.0b3"
+version = "4.0.0"
 description = "Fondat package for Salesforce."
 readme = "README.md"
 authors = ["fondat-salesforce authors"]
@@ -17,7 +17,7 @@ documentation = "https://github.com/fondat/fondat-salesforce/wiki"
 license = "MIT"
 keywords = ["asgi", "framework", "resource", "openapi"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
 ]
@@ -28,11 +28,11 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.10"
 aiohttp = "^3.8"
-fondat = "^4.0b4"
+fondat = "^4.0.0"
 
 [tool.poetry.dev-dependencies]
-black = "^22.6"
-isort = "^5.10.1"
+black = "^22.10"
+isort = "^5.10"
 pre-commit = "^2.20"
 pytest = "^7.1"
 pytest-asyncio = "^0.18"

@@ -1,7 +1,6 @@
 """Fondat Salesforce OAuth module."""
 
 import aiohttp
-import fondat.codec
 
 from fondat.codec import JSONCodec
 from fondat.data import datacls

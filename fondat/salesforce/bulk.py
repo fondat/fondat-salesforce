@@ -4,7 +4,7 @@ import asyncio
 
 from collections import deque
 from contextlib import suppress
-from fondat.csv import typeddict_codec
+from fondat.csv import TypedDictCodec
 from fondat.salesforce.client import Client
 from fondat.salesforce.jobs import queries_resource
 from fondat.salesforce.sobjects import SObject, sobject_field_type
@@ -107,7 +107,7 @@ class SObjectQuery:
         page = await self.query.results(limit=self.page_size or 1000, cursor=self.cursor)
         self.results = deque(page.items)
         self.cursor = page.cursor
-        self.codec = typeddict_codec(self.td, self.results.popleft())
+        self.codec = TypedDictCodec(self.td, self.results.popleft())
 
     async def __anext__(self) -> dict[str, Any]:
         if self.results is None:

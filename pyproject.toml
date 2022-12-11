@@ -31,12 +31,12 @@ aiohttp = "^3.8"
 fondat = "^4.0.0"
 
 [tool.poetry.dev-dependencies]
-black = "^22.10"
+black = "^22.12"
 isort = "^5.10"
 pre-commit = "^2.20"
-pytest = "^7.1"
-pytest-asyncio = "^0.18"
-pytest-cov = "^3.0"
+pytest = "^7.2"
+pytest-asyncio = "^0.20"
+pytest-cov = "^4.0"
 
 [tool.isort]
 profile = "black"

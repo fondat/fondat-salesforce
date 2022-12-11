@@ -8,6 +8,7 @@ from datetime import datetime
 from fondat.codec import JSONCodec
 from fondat.data import datacls
 from fondat.error import NotFoundError
+from fondat.pagination import Page
 from fondat.resource import mutation, operation, query, resource
 from fondat.salesforce.client import Client
 from typing import Literal
@@ -42,18 +43,6 @@ class Query:
 
 
 @datacls
-class QueryResultsPage:
-    items: list[list[str]]
-    cursor: bytes | None
-
-
-@datacls
-class QueriesPage:
-    items: list[Query]
-    cursor: bytes | None
-
-
-@datacls
 class _QueriesResponse:
     done: bool
     records: list[Query]
@@ -84,28 +73,25 @@ def queries_resource(client: Client):
         @operation
         async def get(self) -> Query:
             """Get information about a query job."""
-
             async with client.request("GET", self.path) as response:
                 return JSONCodec.get(Query).decode(await response.json())
 
         @operation
         async def delete(self):
             """Delete a query job."""
-
             async with client.request("DELETE", self.path):
                 pass
 
         @mutation
         async def abort(self):
             """Abort a query job."""
-
             async with client.request("PATCH", self.path, json={"state": "Aborted"}):
                 pass
 
         @query
         async def results(
             self, limit: int = 1000, cursor: bytes | None = None
-        ) -> QueryResultsPage:
+        ) -> Page[list[str]]:
             """
             Get results for a query job as CSV rows.
 
@@ -127,16 +113,14 @@ def queries_resource(client: Client):
                 with io.StringIO(await response.text()) as sio:
                     items = [row for row in csv.reader(sio)]
                 locator = response.headers.get("Sforce-Locator")
-            return QueryResultsPage(
-                items=items, cursor=locator.encode() if locator != "null" else None
-            )
+            return Page(items=items, cursor=locator.encode() if locator != "null" else None)
 
     @resource
     class QueriesResource:
         """Asynchronous query jobs."""
 
         @operation
-        async def get(self, cursor: bytes | None = None) -> QueriesPage:
+        async def get(self, cursor: bytes | None = None) -> Page[Query]:
             """Get information about all query jobs."""
 
             params = {"jobType": "V2Query"}
@@ -144,7 +128,7 @@ def queries_resource(client: Client):
                 method="GET", path=cursor.decode() if cursor else path, params=params
             ) as response:
                 json = JSONCodec.get(_QueriesResponse).decode(await response.json())
-            return QueriesPage(
+            return Page(
                 items=json.records,
                 cursor=json.nextRecordsUrl.encode() if json.nextRecordsUrl else None,
             )

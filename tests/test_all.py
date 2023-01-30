@@ -17,6 +17,9 @@ from fondat.error import NotFoundError
 pytestmark = pytest.mark.asyncio
 
 
+VERSION = "56.0"
+
+
 @pytest.fixture(scope="module")
 def event_loop():
     return asyncio.new_event_loop()
@@ -53,7 +56,7 @@ def refresh_authenticator():
 async def _client(authenticator):
     async with aiohttp.ClientSession() as session:
         yield await fondat.salesforce.client.Client.create(
-            session=session, version="54.0", authenticate=authenticator
+            session=session, version=VERSION, authenticate=authenticator
         )
 
 

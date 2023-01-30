@@ -110,7 +110,7 @@ def queries_resource(client: Client):
             ) as response:
                 if response.status == http.HTTPStatus.NO_CONTENT.value:
                     raise NotFoundError  # no results yet
-                with io.StringIO(await response.text()) as sio:
+                with io.StringIO(await response.text("utf-8")) as sio:
                     items = [row for row in csv.reader(sio)]
                 locator = response.headers.get("Sforce-Locator")
             return Page(items=items, cursor=locator.encode() if locator != "null" else None)

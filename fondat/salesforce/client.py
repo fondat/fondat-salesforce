@@ -105,7 +105,7 @@ class Client:
                 elif response.status == 401 and not auth_error:  # only retry once
                     _logger.debug("retrying authentication")
                     auth_error = True
-                    token = None
+                    self.token = None
                     continue
                 elif 500 <= response.status <= 599 and server_errors < self.retries:
                     _logger.debug(f"retrying server error")

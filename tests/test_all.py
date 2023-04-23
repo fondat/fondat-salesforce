@@ -12,17 +12,18 @@ import os
 import pytest
 
 from fondat.error import NotFoundError
+from fondat.salesforce.bulk import SObjectQuery
+from pytest import fixture
 
 
-pytestmark = pytest.mark.asyncio
+VERSION = "57.0"
 
 
-VERSION = "56.0"
-
-
-@pytest.fixture(scope="module")
+@fixture(scope="module")
 def event_loop():
-    return asyncio.new_event_loop()
+    loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
 
 
 def _password_authenticator():
@@ -103,11 +104,11 @@ async def test_sobject_get(client):
     assert account.Id == account_id
 
 
-async def test_bulk(client):
+async def test_bulk_fields(client):
     accounts = await fondat.salesforce.sobjects.sobject_data_resource(client, "Account")
     sobject = await accounts.describe()
-    async with fondat.salesforce.bulk.SObjectQuery(
-        client, sobject, fields={"Id", "Name", "Website"}, order_by="Name, Website"
+    async with SObjectQuery(
+        client, sobject, columns={"Id", "Name", "Website"}, order_by="Name, Website"
     ) as query:
         async for row in query:
             assert row["Id"]
@@ -118,12 +119,27 @@ async def test_bulk_limit(client):
     accounts = await fondat.salesforce.sobjects.sobject_data_resource(client, "Account")
     sobject = await accounts.describe()
     count = 0
-    async with fondat.salesforce.bulk.SObjectQuery(
-        client, sobject, fields={"Id", "Name", "Website"}, limit=1
-    ) as query:
+    async with SObjectQuery(client, sobject, limit=1) as query:
         async for row in query:
             count += 1
     assert count == 1
+
+
+async def test_bulk_columns(client):
+    opportunities = await fondat.salesforce.sobjects.sobject_data_resource(
+        client, "Opportunity"
+    )
+    sobject = await opportunities.describe()
+    async with SObjectQuery(
+        client,
+        sobject,
+        columns={"Id", SObjectQuery.Column("Amount", "FORMAT(amount)", str)},
+        limit=1,
+    ) as query:
+        async for row in query:
+            assert row["Id"]
+            assert row["Amount"]
+            break
 
 
 async def test_invalid_sobject(client):

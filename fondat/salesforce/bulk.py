@@ -2,7 +2,8 @@
 
 import asyncio
 
-from collections import deque
+from collections import deque, namedtuple
+from collections.abc import Iterable
 from contextlib import suppress
 from fondat.csv import TypedDictCodec
 from fondat.salesforce.client import Client
@@ -22,7 +23,7 @@ class SObjectQuery:
     Parameters:
     • client: client object through which to perform queries
     • sobject: Salesforce object metadata
-    • fields: names of fields to be selected
+    • columns: columns to select  [all fields]
     • where: query conditon expression
     • order_by: order of query results
     • limit: maximum number of rows in query results
@@ -30,12 +31,14 @@ class SObjectQuery:
     • timeout: seconds to wait for query job to complete
     """
 
+    Column = namedtuple("Column", "name, expression, type")
+
     def __init__(
         self,
         client: Client,
         sobject: SObject,
         *,
-        fields: set[str] | None = None,
+        columns: Iterable[Column | str] | None = None,
         where: str | None = None,
         order_by: str | None = None,
         limit: int | None = None,
@@ -44,18 +47,29 @@ class SObjectQuery:
     ):
         self.client = client
         self.page_size = page_size
-        indexed = {field.name: field for field in sobject.fields}
-        if fields is None:
-            fields = [f.name for f in sobject.fields if f.type not in _exclude_types]
-        if len(fields) == 0:
-            raise ValueError("you must query at least one field")
-        for name in fields:
-            if not (field := indexed.get(name)):
-                raise ValueError(f"unknown field: {name}")
+        columns = (
+            [f.name for f in sobject.fields if f.type not in _exclude_types]
+            if columns is None
+            else list(columns)
+        )
+        if len(columns) == 0:
+            raise ValueError("must select at least one column")
+        fields = {field.name: field for field in sobject.fields}
+        for n, column in enumerate(columns):
+            if isinstance(column, SObjectQuery.Column):
+                continue
+            field = fields.get(column)
+            if not field:
+                raise ValueError(f"unknown field: {column}")
             if field.type in _exclude_types:
-                raise ValueError(f"cannot query {field.type} type field: {name}")
-        self.td = TypedDict("QueryDict", {f: sobject_field_type(indexed[f]) for f in fields})
-        self.stmt = f"SELECT {', '.join(fields)} FROM {sobject.name}"
+                raise ValueError(f"cannot query {field.type} type field: {column}")
+            columns[n] = SObjectQuery.Column(column, None, sobject_field_type(field))
+        self.td = TypedDict("QueryDict", {column.name: column.type for column in columns})
+        self.stmt = "SELECT "
+        self.stmt += ", ".join(
+            ((c.expression or c.name) + (f" {c.name}" if c.expression else "")) for c in columns
+        )
+        self.stmt += f" FROM {sobject.name}"
         if where:
             self.stmt += f" WHERE {where}"
         if order_by:
